@@ -1,0 +1,4 @@
+#!/bin/bash
+clear
+ls -1 defaults/ > files/computers.txt
+mod/hack.py
