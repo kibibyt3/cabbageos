@@ -157,23 +157,38 @@ def notLoggedIn(mode, savFile):
     elif command == 'help':
       print("login: Allows the user to log in\n\
 register: Allows a new user to register a username\n\
-help: Prints this help dialogue")
+help: Prints this help dialogue\n\
+exit: exits the VM")
     elif command == 'crackpass':
       usernameTry = input('Username: ')
       chars = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',1,1,1,1,1,1,1,0,0,0,0,0,0,0]
       shuffle(chars)
-      for elem in chars:
-        print(elem)
-        sleep(.1)
       if mode == 'std':
         globalUsername = usernameTry
-      print("Login successful.")
-      loopLogin = 0
-      if mode == 'std':
-        fileName = 'saves/%s/%s.sav' % (usernameTry, usernameTry)
-      elif mode == 'remote':
-        fileName = savFile
-      load()
+      try:
+        if mode == 'std':
+          test = open('saves/%s/%s.sav' % (usernameTry, usernameTry))
+        elif mode == 'remote':
+          test = open(savFile)
+      except FileNotFoundError:
+        fileFound = False
+      else:
+        fileFound = True
+      if fileFound == True:
+        for elem in chars:
+          print(elem)
+          sleep(.1)
+        print("Login successful.")
+        loopLogin = 0
+        if mode == 'std':
+          fileName = 'saves/%s/%s.sav' % (usernameTry, usernameTry)
+        elif mode == 'remote':
+          fileName = savFile
+        load()
+      elif fileFound == False:
+        print("No such user could be found.")
+    elif command == 'exit':
+      exit()
     else:
       print('Input misunderstood. Type "help" to see possible commands.')
 
