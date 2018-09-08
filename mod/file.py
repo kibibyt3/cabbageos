@@ -1,6 +1,14 @@
 import json
 from ast import literal_eval
 
+# A guide to adding a new file var:
+# First, add a var to parse;
+# Then, add a var to save;
+# Last, add a var to load.
+# After that, do the same for
+# the write, save, and load
+# functions in hack.py.
+
 def init(username, dirs, files):
   
   # Syntax for dirs is: name, isRootDir, parent, contents
@@ -12,7 +20,7 @@ def init(username, dirs, files):
   strDirs = str(dirs)
   strFiles = str(files)
   savFile = open('saves/%s/%s.sav' % (username, username), 'a')
-  savFile.write("<%s>\n<%s>" % (strDirs, strFiles))
+  savFile.write("<%s>\n<%s>\ncrackSecure: <1>" % (strDirs, strFiles))
 
 def refresh(dirs, files):
   for comp1 in dirs:
@@ -56,6 +64,7 @@ def parse(file, mode):
   strDirs = ''
   strFiles = ''
   ip = ''
+  crackSecure = ''
   for elem in savStr:
     if read == 0:
       if elem == '<':
@@ -76,30 +85,28 @@ def parse(file, mode):
         strDirs += elem
       elif tries == 5:
         strFiles += elem
+      elif tries == 6:
+        crackSecure += elem
     if updateRead == 1:
       read = 1
       updateRead = 0
+  sav.close()
   if mode == 'username':
-    sav.close()
     return(trueUsername)
   elif mode == 'password':
-    sav.close()
     return(truePassword)
   elif mode == 'hostname':
-    sav.close()
     return(trueHostname)
   elif mode == 'files':
-    sav.close()
     return(strFiles)
   elif mode == 'dirs':
-    sav.close()
     return(strDirs)
   elif mode == 'ip':
-    sav.close()
     return(ip)
+  elif mode == 'crackSecure':
+    return(crackSecure)
   elif mode == 'all':
-    sav.close()
-    return([trueUsername, truePassword, hostname, ip, strFiles, strDirs])
+    return([trueUsername, truePassword, hostname, ip, strFiles, strDirs, crackSecure])
 
 def write(file, *args):
   savFile = open(file, 'w')
@@ -115,7 +122,8 @@ def save(dirs, files, toSavFile):
   username = parse(toSavFile, 'username')
   password = parse(toSavFile, 'password')
   hostname = parse(toSavFile, 'hostname')
-  write(toSavFile, username, password, hostname, strDirs, strFiles)
+  crackSecure = parse(toSavFile, 'crackSecure')
+  write(toSavFile, username, password, hostname, strDirs, strFiles, crackSecure)
   
 def load(toSavFile, mode):
   if mode == 'username':
@@ -132,6 +140,8 @@ def load(toSavFile, mode):
     return(savList)
   elif mode == 'ip':
     return(parse(toSavFile, 'ip'))
+  elif mode == 'crackSecure':
+    return(parse(toSavFile, 'crackSecure'))
   else:
-    print("ERROR: Consult file.py. Code 0.") #Error code 0 HERE
+    print("ERROR: Consult file.py. Code 0.") # Error code 0 here
     exit()

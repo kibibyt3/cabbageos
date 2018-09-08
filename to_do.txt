@@ -1,1 +1,1 @@
-
+make it simpler to add a new variable to the save files

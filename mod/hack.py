@@ -5,6 +5,7 @@ import os
 import file
 import first
 import cracks
+from random import choice
 
 globalUsername = ''
 username = ''
@@ -21,9 +22,12 @@ hostnameContainer = ''
 ipContainer = ''
 filesContainer = []
 dirsContainer = []
+crackSecureContainer = 0
 
 fileName = ''
 fileNameContainer = ''
+
+crackSecure = 0
 
 """
 All of this below
@@ -39,7 +43,8 @@ def write():
   global ip
   global files
   global dirs
-  file.write(fileName, username, password, hostname, ip, dirs, files)
+  global crackSecure
+  file.write(fileName, username, password, hostname, ip, dirs, files, crackSecure)
 
 def save():
   global dirs
@@ -55,12 +60,14 @@ def load():
   global files
   global dirs
   global fileName
+  global crackSecure
   username = file.load(fileName, 'username')
   password = file.load(fileName, 'password')
   hostname = file.load(fileName, 'hostname')
   ip = file.load(fileName, 'ip')
   files = file.load(fileName, 'files')
   dirs = file.load(fileName, 'dirs')
+  crackSecure = int(file.load(fileName, 'crackSecure'))
 
 def remoteLoad(openFile):
   global username
@@ -77,9 +84,12 @@ def remoteLoad(openFile):
   global filesContainer
   global dirsContainer
   global fileNameContainer
+  global crackSecureContainer
 
   global isRemote
   global globalUsername
+
+  global crackSecure
 
   usernameContainer = username
   passwordContainer = password
@@ -88,6 +98,7 @@ def remoteLoad(openFile):
   filesContainer = files
   dirsContainer = dirs
   fileNameContainer = fileName
+  crackSecureContainer = crackSecure
 
   username = file.load(openFile, 'username')
   password = file.load(openFile, 'password')
@@ -96,6 +107,7 @@ def remoteLoad(openFile):
   files = file.load(openFile, 'files')
   remoteDirs = file.load(openFile, 'dirs')
   fileName = '/saves/%s/%s' % (username, openFile)
+  crackSecure = int(file.load(openFile, 'crackSecure'))
 
   isRemote = True  
 
@@ -107,6 +119,7 @@ def remoteReset():
   global files
   global dirs
   global fileName
+  global crackSecure
 
   global usernameContainer
   global passwordContainer
@@ -115,6 +128,7 @@ def remoteReset():
   global filesContainer
   global dirsContainer
   global fileNameContainer
+  global crackSecureContainer
 
   global isRemote
 
@@ -125,6 +139,7 @@ def remoteReset():
   files = filesContainer
   dirs = dirsContainer
   fileName = fileNameContainer  
+  crackSecure = crackSecureContainer
 
   isRemote = False 
 
@@ -134,6 +149,7 @@ def notLoggedIn(mode, savFile):
   global dirs
   global fileName
   global globalUsername
+  global crackSecure
   from time import sleep
   from random import shuffle
   loopLogin = 1
@@ -174,17 +190,33 @@ exit: exits the VM")
         fileFound = False
       else:
         fileFound = True
+      
       if fileFound == True:
-        for elem in chars:
-          print(elem)
-          sleep(.1)
-        print("Login successful.")
-        loopLogin = 0
         if mode == 'std':
           fileName = 'saves/%s/%s.sav' % (usernameTry, usernameTry)
         elif mode == 'remote':
           fileName = savFile
         load()
+        if crackSecure == 1:
+          print("Attempting to brute force...")
+          print(choice(chars))
+          sleep(.1)
+          print(choice(chars))
+          sleep(.5)
+          print(choice(chars))
+          sleep(2)
+          print(choice(chars))
+          sleep(2)
+          print(choice(chars))
+          sleep(2)
+          print("Brute force attack failed. Login attempt timeout present.")
+        else:
+          print("Attempting to brute force...")
+          for elem in chars:
+            print(elem)
+            sleep(.1)
+          print("Login successful.")
+          loopLogin = 0
       elif fileFound == False:
         print("No such user could be found.")
     elif command == 'exit':
@@ -352,6 +384,11 @@ while True:
     rm(commandList[1])
   elif commandList[0] == 'ip':
     print(ip)
+
+  # Debug options here
+  elif commandList[0] == 'debug':
+    print(crackSecure)
+
   elif commandList[0] == 'connect':
     if isRemote == False:
       connect(commandList[1])
