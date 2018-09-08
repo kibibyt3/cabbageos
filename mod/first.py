@@ -1,4 +1,4 @@
-#!/usr/bin/python3.6
+#!/usr/bin/python3.7
 import sys
 import os
 from random import randint
@@ -56,10 +56,17 @@ def setup():
         os.makedirs("saves/%s" % (username))
         saveFile = open("saves/%s/%s.sav" % (username, username), 'w')
         saveFile.write("Username: <%s>\nPassword: <%s>\nHostname: <%s>\nIP: <%s>" % (username, password, hostname, ip))
-        adminFileDest = open("saves/%s/admin.sav" % username, "w")
-        adminFileDest.close()
-        copyfile("defaults/admin.sav", "saves/%s/admin.sav" % username)
+
+        # Whenever you add a default file, add a call here.
+        addDefaultFile("admin", username)
+
         loop = 0
         return(username)
       else:
         print("Input misunderstood. Please try again...")
+
+def addDefaultFile(name, username):
+  fileDest = open("saves/%s/%s.sav" % (username, name), 'w')
+  fileDest.close()
+  copyfile("defaults/%s.sav" % name, "saves/%s/%s.sav" % (username, name))
+

@@ -1,1 +1,5 @@
-<example><12345><example_host><72.150.217.171><[['/', '1', 'thereisnoparent', ['welcome.txt', 'home']], ['home', '0', '/', ['luck.txt']]]><[['welcome.txt', '/', "Welcome to cabbageOS! Type 'help' for a list of commands."], ['luck.txt', 'home', 'Good luck!']]>
+Username: <example>
+Password: <12345>
+Hostname: <example_host>
+IP: <137.88.182.216><[['/', '1', 'thereisnoparent', []], ['home', '0', '/', []]]>
+<[['welcome.txt', '/', "Welcome to cabbageOS! Type 'help' for a list of commands."], ['luck.txt', 'home', 'Good luck!']]>
