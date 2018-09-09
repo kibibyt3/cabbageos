@@ -1,4 +1,5 @@
 #!/bin/bash
+
 clear
 ls -1 defaults/ > files/computers.txt
-mod/hack.py
+python3.6 mod/hack.py

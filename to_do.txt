@@ -1,1 +1,1 @@
-make it simpler to add a new variable to the save files
+so, at present i need to run through that input loop in order to cd correctly in telnet. work on that, i guess

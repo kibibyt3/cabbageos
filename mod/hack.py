@@ -172,9 +172,13 @@ def notLoggedIn(mode, savFile):
         load()
     elif command == 'help':
       print("login: Allows the user to log in\n\
-register: Allows a new user to register a username\n\
 help: Prints this help dialogue\n\
 exit: exits the VM")
+
+      # This is because remote users can't register.
+      if mode == 'std':
+        print("register: Allows creation of a new user")
+
     elif command == 'crackpass':
       usernameTry = input('Username: ')
       chars = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',1,1,1,1,1,1,1,0,0,0,0,0,0,0]
@@ -284,6 +288,66 @@ def connect(ipTry):
       print("A connection error occurred.")
       return(False)
 
+def telnet(ipTry):
+  global ip
+  global globalUsername
+  found = False
+  for elem in file.parseLs('files/computers.txt'):
+    remoteLoad('saves/%s/%s' % (globalUsername, elem))
+    if ip == ipTry:
+      found = True
+      cdReturns = []
+      cdReturns.append(cd('var'))
+      print('var return', cdReturns[0]) # DEBUG
+      cdReturns.append(cd('www'))
+      print('www', cdReturns[1])  # Debug
+      cdReturns.append(cd('html'))
+      print('html', cdReturns[2])  # debug
+      for elem in cdReturns:
+        if elem == 1 or elem == 2:
+          print("An index.html file could not be found at this server.")
+          remoteReset()
+          return 3
+      catReturn = cat("index.html")
+      if catReturn[0]:
+        print(catReturn[1])
+        remoteReset()
+        return 0
+      else:
+        remoteReset()
+        print("An index.html file could not be found at this server.")
+        return 1
+  if found == False:
+    print("Failed to connect to %s." % ipTry)
+    remoteReset()
+    return 2
+    
+def cat(fileName):
+  global files
+  returnSuccess = 0
+  for elem in files:
+    if elem[0] == commandList[1]:
+      return [True, elem[2]]
+  if returnSuccess == 0:
+    return [False]
+
+def cd(fileName):
+  global cwd
+  theCwd = cwd
+  for elem in dirs:
+    if elem[0] == commandList[1]:
+      cwd = elem[0]
+      return 0
+  if commandList[1] == '..':
+    if cwd == '/':
+      return 1
+    else:
+      for elem in dirs:
+        if theCwd == elem[0]:
+          cwd = elem[2]
+          return 0
+  return 2
+
 notLoggedIn('std', 'nofile')
 print("Welcome back to %s, %s!" % (hostname, username))
 cwd = '/'
@@ -302,11 +366,10 @@ while True:
       else:
         print(elem)
   elif commandList[0] == 'cat':
-    for elem in files:
-      if elem[0] == commandList[1]:
-        print(elem[2])
-        returnSuccess = 1
-    if returnSuccess == 0:
+    returnList = cat(commandList[1])
+    if returnList[0] == True:
+      print(returnList[1])
+    else:
       print("There is no such file.")
   elif commandList[0] == 'echo':
     print(commandList[1])
@@ -338,22 +401,15 @@ while True:
     for elem in pathList:
       pathStr += elem + '/'
     print(pathStr)
+
+  # cd command
   elif commandList[0] == 'cd':
-    theCwd = cwd
-    for elem in dirs:
-      if elem[0] == commandList[1]:
-        cwd = elem[0]
-        returnSuccess = 1
-    if commandList[1] == '..':
-      if cwd == '/':
-        print("Already in root directory; operation not permitted.")
-      else:
-        for elem in dirs:
-          if theCwd == elem[0]:
-            cwd = elem[2]
-      returnSuccess = 1
-    if returnSuccess == 0:
+    cdReturn = cd(commandList[1])
+    if cdReturn == 1:
+      print("Already in root directory; operation not permitted.")
+    elif cdReturn == 2:
       print("Operation not permitted; no such directory.")
+  
   elif commandList[0] == 'touch':
     files.append([commandList[1], cwd, ''])
   elif commandList[0] == 'write':
@@ -392,6 +448,13 @@ while True:
   elif commandList[0] == 'connect':
     if isRemote == False:
       connect(commandList[1])
+    else:
+      print("Cannot connect to remote server from remote server.")
+  elif commandList[0] == 'telnet':
+    if isRemote == False:
+      telnet(commandList[1])
+    else:
+      print("Cannot connect to remote server from remote server.")
   else:
     print("Input not understood. Type 'help' to see a list of commands.")
   if autoSave == 1:
