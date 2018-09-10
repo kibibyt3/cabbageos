@@ -352,113 +352,139 @@ notLoggedIn('std', 'nofile')
 print("Welcome back to %s, %s!" % (hostname, username))
 cwd = '/'
 
-while True:
-  autoSave = 1
-  file.refresh(dirs, files)
-  commandRaw = input("%s@%s>" % (username, hostname))
-  commandList = parseCommand(commandRaw)
-  returnSuccess = 0
-  if commandList[0] == 'ls':
-    lsReturn = ls()
-    for elem in lsReturn:
-      if lsReturn.index(elem) != (len(lsReturn) - 1):
-        print(elem, end = ' | ')
-      else:
-        print(elem)
-  elif commandList[0] == 'cat':
-    returnList = cat(commandList[1])
-    if returnList[0] == True:
-      print(returnList[1])
-    else:
-      print("There is no such file.")
-  elif commandList[0] == 'echo':
-    print(commandList[1])
-  elif commandList[0] == 'exit':
-    if isRemote == True:
-      remoteReset()
-    else:
-      exit()
-  elif commandList[0] == 'pwd':
-    pathList = []
-    dirName = cwd
-    success = 0
-    for elem in dirs:
-      if elem[0] == dirName:
-        cwdIndex = dirs.index(elem)
-    isRootDir = 0
-    isRootDir2 = 0
-    while isRootDir == 0 and isRootDir2 == 0:
-      if cwd == '/':
-        isRootDir2 = 1
-      for elem in dirs:
-        if elem[0] == dirName and isRootDir2 == 0:
-          cwdIndex = dirs.index(elem)
-          pathList.insert(0, dirName)
-          dirName = dirs[cwdIndex][2]
-          if dirName == '/':
-            isRootDir = 1
-    pathStr = '/'
-    for elem in pathList:
-      pathStr += elem + '/'
-    print(pathStr)
+def inputLoop(*arg):
+  global globalUsername
+  global username
+  global password
+  global hostname
+  global ip
+  global files
+  global dirs
 
-  # cd command
-  elif commandList[0] == 'cd':
-    cdReturn = cd(commandList[1])
-    if cdReturn == 1:
-      print("Already in root directory; operation not permitted.")
-    elif cdReturn == 2:
-      print("Operation not permitted; no such directory.")
-  
-  elif commandList[0] == 'touch':
-    files.append([commandList[1], cwd, ''])
-  elif commandList[0] == 'write':
-    for elem in files:
-      if elem[0] == commandList[1]:
-        writeStr = ''
-        for command in commandList[2:]:
-          if command == '\\n':
-            writeStr += '\n'
-          else:
-            if writeStr == '':
-              writeStr += command
+  global usernameContainer
+  global passwordContainer
+  global hostnameContainer
+  global ipContainer
+  global filesContainer
+  global dirsContainer
+  global crackSecureContainer
+
+  global isRemote  
+  global fileName
+  global fileNameContainer
+
+  global crackSecure
+
+  while True:
+    autoSave = 1
+    file.refresh(dirs, files)
+    if arg != ():
+      commandRaw = arg[0]
+    else:
+      commandRaw = input("%s@%s>" % (username, hostname))
+    commandList = parseCommand(commandRaw)
+    returnSuccess = 0
+    if commandList[0] == 'ls':
+      lsReturn = ls()
+      for elem in lsReturn:
+        if lsReturn.index(elem) != (len(lsReturn) - 1):
+          print(elem, end = ' | ')
+        else:
+          print(elem)
+    elif commandList[0] == 'cat':
+      returnList = cat(commandList[1])
+      if returnList[0] == True:
+        print(returnList[1])
+      else:
+        print("There is no such file.")
+    elif commandList[0] == 'echo':
+      print(commandList[1])
+    elif commandList[0] == 'exit':
+      if isRemote == True:
+        remoteReset()
+      else:
+        exit()
+    elif commandList[0] == 'pwd':
+      pathList = []
+      dirName = cwd
+      success = 0
+      for elem in dirs:
+        if elem[0] == dirName:
+          cwdIndex = dirs.index(elem)
+      isRootDir = 0
+      isRootDir2 = 0
+      while isRootDir == 0 and isRootDir2 == 0:
+        if cwd == '/':
+          isRootDir2 = 1
+        for elem in dirs:
+          if elem[0] == dirName and isRootDir2 == 0:
+            cwdIndex = dirs.index(elem)
+            pathList.insert(0, dirName)
+            dirName = dirs[cwdIndex][2]
+            if dirName == '/':
+              isRootDir = 1
+      pathStr = '/'
+      for elem in pathList:
+        pathStr += elem + '/'
+      print(pathStr)
+
+    # cd command
+    elif commandList[0] == 'cd':
+      cdReturn = cd(commandList[1])
+      if cdReturn == 1:
+        print("Already in root directory; operation not permitted.")
+      elif cdReturn == 2:
+        print("Operation not permitted; no such directory.")
+    
+    elif commandList[0] == 'touch':
+      files.append([commandList[1], cwd, ''])
+    elif commandList[0] == 'write':
+      for elem in files:
+        if elem[0] == commandList[1]:
+          writeStr = ''
+          for command in commandList[2:]:
+            if command == '\\n':
+              writeStr += '\n'
             else:
-              writeStr = writeStr + ' ' + command
-        elem[2] = writeStr
-  elif commandList[0] == 'autosave':
-    if autoSave == 0:
-      autoSave = 1
-    elif autoSave == 1:
-      autoSave = 0
-  elif commandList[0] == 'autocheck':
-    print(autoSave)
-  elif commandList[0] == 'save':
-    write()
-  elif commandList[0] == 'mkdir':
-    dirs.append([commandList[1], 0, cwd, []])
-  elif commandList[0] == 'rm':
-    rm(commandList[1])
-  elif commandList[0] == 'ip':
-    print(ip)
+              if writeStr == '':
+                writeStr += command
+              else:
+                writeStr = writeStr + ' ' + command
+          elem[2] = writeStr
+    elif commandList[0] == 'autosave':
+      if autoSave == 0:
+        autoSave = 1
+      elif autoSave == 1:
+        autoSave = 0
+    elif commandList[0] == 'autocheck':
+      print(autoSave)
+    elif commandList[0] == 'save':
+      write()
+    elif commandList[0] == 'mkdir':
+      dirs.append([commandList[1], 0, cwd, []])
+    elif commandList[0] == 'rm':
+      rm(commandList[1])
+    elif commandList[0] == 'ip':
+      print(ip)
 
   # Debug options here
-  elif commandList[0] == 'debug':
-    print(crackSecure)
+    elif commandList[0] == 'debug':
+      print(crackSecure)
 
-  elif commandList[0] == 'connect':
-    if isRemote == False:
-      connect(commandList[1])
+    elif commandList[0] == 'connect':
+      if isRemote == False:
+        connect(commandList[1])
+      else:
+        print("Cannot connect to remote server from remote server.")
+    elif commandList[0] == 'telnet':
+      if isRemote == False:
+        telnet(commandList[1])
+      else:
+        print("Cannot connect to remote server from remote server.")
     else:
-      print("Cannot connect to remote server from remote server.")
-  elif commandList[0] == 'telnet':
-    if isRemote == False:
-      telnet(commandList[1])
-    else:
-      print("Cannot connect to remote server from remote server.")
-  else:
-    print("Input not understood. Type 'help' to see a list of commands.")
-  if autoSave == 1:
-    write()
+      print("Input not understood. Type 'help' to see a list of commands.")
+    if autoSave == 1:
+      write()
 
 """
 File syntax is name, isRootDir, parent, contents.
