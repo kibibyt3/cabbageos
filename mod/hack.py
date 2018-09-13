@@ -376,29 +376,32 @@ def inputLoop(*arg):
   global crackSecure
 
   while True:
+   returnStr = ''
     autoSave = 1
     file.refresh(dirs, files)
     if arg != ():
       commandRaw = arg[0]
+      mode = 0  # Mode 0 is when it's called by a command.
     else:
       commandRaw = input("%s@%s>" % (username, hostname))
+      mode = 1  # Mode 1 is when it's called by the user.
     commandList = parseCommand(commandRaw)
     returnSuccess = 0
     if commandList[0] == 'ls':
       lsReturn = ls()
       for elem in lsReturn:
         if lsReturn.index(elem) != (len(lsReturn) - 1):
-          print(elem, end = ' | ')
+          returnStr += elem + ' | '
         else:
-          print(elem)
+          returnStr += elem
     elif commandList[0] == 'cat':
       returnList = cat(commandList[1])
       if returnList[0] == True:
-        print(returnList[1])
+        returnStr = returnList[1]
       else:
-        print("There is no such file.")
+        returnStr = "There is no such file."
     elif commandList[0] == 'echo':
-      print(commandList[1])
+      returnStr = commandList[1]
     elif commandList[0] == 'exit':
       if isRemote == True:
         remoteReset()
@@ -426,7 +429,7 @@ def inputLoop(*arg):
       pathStr = '/'
       for elem in pathList:
         pathStr += elem + '/'
-      print(pathStr)
+      returnStr = pathStr
 
     # cd command
     elif commandList[0] == 'cd':
@@ -457,7 +460,7 @@ def inputLoop(*arg):
       elif autoSave == 1:
         autoSave = 0
     elif commandList[0] == 'autocheck':
-      print(autoSave)
+      returnStr = autoSave
     elif commandList[0] == 'save':
       write()
     elif commandList[0] == 'mkdir':
@@ -465,26 +468,33 @@ def inputLoop(*arg):
     elif commandList[0] == 'rm':
       rm(commandList[1])
     elif commandList[0] == 'ip':
-      print(ip)
+      returnStr = ip
 
   # Debug options here
     elif commandList[0] == 'debug':
-      print(crackSecure)
+      returnStr = crackSecure
 
     elif commandList[0] == 'connect':
       if isRemote == False:
         connect(commandList[1])
       else:
-        print("Cannot connect to remote server from remote server.")
+        returnStr = "Cannot connect to remote server from remote server."
     elif commandList[0] == 'telnet':
       if isRemote == False:
         telnet(commandList[1])
       else:
-        print("Cannot connect to remote server from remote server.")
+        returnStr = "Cannot connect to remote server from remote server."
     else:
-      print("Input not understood. Type 'help' to see a list of commands.")
+      returnStr = "Input not understood. Type 'help' to see a list of commands."
     if autoSave == 1:
       write()
+
+    # Return returnStr, when not empty, properly.
+    if returnStr != '':
+      if mode == 0:
+        return returnStr
+      else:
+        print(returnStr)
 
 """
 File syntax is name, isRootDir, parent, contents.
