@@ -3,3 +3,5 @@ right now i'm making function inputLoop work as a function. Look at commandRaw, 
 so, at present i need to run through that input loop in order to cd correctly in telnet. work on that, i guess
 
 3: Make it so that cdreturns acutally returns through inputloop.
+
+4: Later, let's hash and salt passwords.
