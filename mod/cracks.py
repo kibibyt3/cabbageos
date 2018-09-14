@@ -23,3 +23,26 @@ def login(mode, savFile):
       print("Login successful.")
       return (usernameTry, truePassword)
   return False
+
+def autoLogin(mode, savFile, usernameTry, passwordTry):
+  import file
+  try:
+    if mode == 'std':
+      tryFile = open('saves/%s/%s.sav' % (usernameTry, usernameTry), 'r+')
+    elif mode == 'remote':
+      tryFile = open(savFile, 'r+')
+  except FileNotFoundError:
+    return 1
+  else:
+    if mode == 'std':
+      truePassword = file.load('saves/%s/%s.sav' % (usernameTry, usernameTry), 'password')
+    elif mode == 'remote':
+      truePassword = file.load(savFile, 'password')
+    if passwordTry != truePassword:
+      return 2
+    else:
+      if mode == 'std':
+        globalUsername = usernameTry
+      return (usernameTry, truePassword)
+  return False
+    

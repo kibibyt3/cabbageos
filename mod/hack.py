@@ -295,16 +295,20 @@ def telnet(ipTry):
   for elem in file.parseLs('files/computers.txt'):
     remoteLoad('saves/%s/%s' % (globalUsername, elem))
     if ip == ipTry:
+      savFile = 'saves/%s/%s' % (globalUsername, elem)
+      username = file.load(savFile, 'username')
+      password = file.load(savFile, 'password')
+      loginReturn = cracks.autoLogin('remote', savFile, username, password)
       found = True
       cdReturns = []
-      cdReturns.append(cd('var'))
+      cdReturns.append(inputLoop('cd var'))
       print('var return', cdReturns[0]) # DEBUG
-      cdReturns.append(cd('www'))
+      cdReturns.append(inputLoop('cd www'))
       print('www', cdReturns[1])  # Debug
-      cdReturns.append(cd('html'))
+      cdReturns.append(inputLoop('cd html'))
       print('html', cdReturns[2])  # debug
       for elem in cdReturns:
-        if elem == 1 or elem == 2:
+        if elem == "Operation not permitted; no such directory.":
           print("An index.html file could not be found at this server.")
           remoteReset()
           return 3
@@ -335,10 +339,10 @@ def cd(fileName):
   global cwd
   theCwd = cwd
   for elem in dirs:
-    if elem[0] == commandList[1]:
+    if elem[0] == fileName:
       cwd = elem[0]
       return 0
-  if commandList[1] == '..':
+  if fileName == '..':
     if cwd == '/':
       return 1
     else:
@@ -347,10 +351,6 @@ def cd(fileName):
           cwd = elem[2]
           return 0
   return 2
-
-notLoggedIn('std', 'nofile')
-print("Welcome back to %s, %s!" % (hostname, username))
-cwd = '/'
 
 def inputLoop(*arg):
   global globalUsername
@@ -376,7 +376,7 @@ def inputLoop(*arg):
   global crackSecure
 
   while True:
-   returnStr = ''
+    returnStr = ''
     autoSave = 1
     file.refresh(dirs, files)
     if arg != ():
@@ -430,15 +430,15 @@ def inputLoop(*arg):
       for elem in pathList:
         pathStr += elem + '/'
       returnStr = pathStr
-
+ 
     # cd command
     elif commandList[0] == 'cd':
       cdReturn = cd(commandList[1])
       if cdReturn == 1:
-        print("Already in root directory; operation not permitted.")
+        returnStr = "Already in root directory; operation not permitted."
       elif cdReturn == 2:
-        print("Operation not permitted; no such directory.")
-    
+        returnStr = "Operation not permitted; no such directory."
+   
     elif commandList[0] == 'touch':
       files.append([commandList[1], cwd, ''])
     elif commandList[0] == 'write':
@@ -473,7 +473,7 @@ def inputLoop(*arg):
   # Debug options here
     elif commandList[0] == 'debug':
       returnStr = crackSecure
-
+   
     elif commandList[0] == 'connect':
       if isRemote == False:
         connect(commandList[1])
@@ -495,6 +495,17 @@ def inputLoop(*arg):
         return returnStr
       else:
         print(returnStr)
+
+def main():
+  global hostname
+  global username
+  global cwd
+  notLoggedIn('std', 'nofile')
+  print("Welcome back to %s, %s!" % (hostname, username))
+  cwd = '/'
+  inputLoop()
+
+main()
 
 """
 File syntax is name, isRootDir, parent, contents.

@@ -2,4 +2,4 @@
 
 clear
 ls -1 defaults/ > files/computers.txt
-python3.6 mod/hack.py
+python3.7 mod/hack.py
