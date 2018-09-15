@@ -106,7 +106,7 @@ def remoteLoad(openFile):
   ip = file.load(openFile, 'ip')
   files = file.load(openFile, 'files')
   remoteDirs = file.load(openFile, 'dirs')
-  fileName = '/saves/%s/%s' % (username, openFile)
+  fileName = openFile
   crackSecure = int(file.load(openFile, 'crackSecure'))
 
   isRemote = True  
@@ -291,22 +291,22 @@ def connect(ipTry):
 def telnet(ipTry):
   global ip
   global globalUsername
+  global isRemote
   found = False
+  isRemote = True
   for elem in file.parseLs('files/computers.txt'):
     remoteLoad('saves/%s/%s' % (globalUsername, elem))
     if ip == ipTry:
       savFile = 'saves/%s/%s' % (globalUsername, elem)
       username = file.load(savFile, 'username')
       password = file.load(savFile, 'password')
+      print(savFile)
       loginReturn = cracks.autoLogin('remote', savFile, username, password)
       found = True
       cdReturns = []
       cdReturns.append(inputLoop('cd var'))
-      print('var return', cdReturns[0]) # DEBUG
       cdReturns.append(inputLoop('cd www'))
-      print('www', cdReturns[1])  # Debug
       cdReturns.append(inputLoop('cd html'))
-      print('html', cdReturns[2])  # debug
       for elem in cdReturns:
         if elem == "Operation not permitted; no such directory.":
           print("An index.html file could not be found at this server.")
@@ -330,7 +330,7 @@ def cat(fileName):
   global files
   returnSuccess = 0
   for elem in files:
-    if elem[0] == commandList[1]:
+    if elem[0] == fileName:
       return [True, elem[2]]
   if returnSuccess == 0:
     return [False]
