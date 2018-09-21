@@ -1,5 +1,14 @@
 #!/bin/bash
 
+VERSION=$1
 clear
 ls -1 defaults/ > files/computers.txt
-python3.7 mod/hack.py
+
+# Default version is 7, but I'm tired of rewriting every time I switch machines.
+# 7 and 6 are the only ones tested thus far.
+if [ $VERSION = '' ]
+then
+  VERSION=7
+fi
+
+python3.$VERSION mod/hack.py
