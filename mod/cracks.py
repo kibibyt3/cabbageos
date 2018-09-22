@@ -8,7 +8,7 @@ def login(mode, savFile):
     elif mode == 'remote':
       tryFile = open(savFile, 'r+')
   except FileNotFoundError:
-    print("That username/password combination does not exist. Please try again. (Code 100).")
+    print("That username/password combination does not exist. Please try again.")
   else:
     if mode == 'std':
       truePassword = file.load('saves/%s/%s.sav' % (usernameTry, usernameTry), 'password')

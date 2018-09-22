@@ -300,13 +300,12 @@ def telnet(ipTry):
       savFile = 'saves/%s/%s' % (globalUsername, elem)
       username = file.load(savFile, 'username')
       password = file.load(savFile, 'password')
-      print(savFile)
       loginReturn = cracks.autoLogin('remote', savFile, username, password)
       found = True
       cdReturns = []
-      cdReturns.append(inputLoop('cd var'))
-      cdReturns.append(inputLoop('cd www'))
-      cdReturns.append(inputLoop('cd html'))
+      cdReturns.append(inputLoop(0, 'cd var'))
+      cdReturns.append(inputLoop(0, 'cd www'))
+      cdReturns.append(inputLoop(0, 'cd html'))
       for elem in cdReturns:
         if elem == "Operation not permitted; no such directory.":
           print("An index.html file could not be found at this server.")
@@ -352,7 +351,10 @@ def cd(fileName):
           return 0
   return 2
 
-def inputLoop(*arg):
+# The very first argument is the mode.
+# 0: Called as a command
+# 1: Called by the user
+def inputLoop(mode, *arg):
   global globalUsername
   global username
   global password
@@ -375,127 +377,116 @@ def inputLoop(*arg):
 
   global crackSecure
 
-  while True:
-    returnStr = ''
-    autoSave = 1
-    file.refresh(dirs, files)
-    if arg != ():
-      commandRaw = arg[0]
-      mode = 0  # Mode 0 is when it's called by a command.
+  returnStr = ''
+  autoSave = 1
+  file.refresh(dirs, files)
+  commandRaw = arg[0]
+  commandList = parseCommand(commandRaw)
+  returnSuccess = 0
+  if commandList[0] == 'ls':
+    lsReturn = ls()
+    for elem in lsReturn:
+      if lsReturn.index(elem) != (len(lsReturn) - 1):
+        returnStr += elem + ' | '
+      else:
+        returnStr += elem
+  elif commandList[0] == 'cat':
+    returnList = cat(commandList[1])
+    if returnList[0] == True:
+      returnStr = returnList[1]
     else:
-      commandRaw = input("%s@%s>" % (username, hostname))
-      mode = 1  # Mode 1 is when it's called by the user.
-    commandList = parseCommand(commandRaw)
-    returnSuccess = 0
-    if commandList[0] == 'ls':
-      lsReturn = ls()
-      for elem in lsReturn:
-        if lsReturn.index(elem) != (len(lsReturn) - 1):
-          returnStr += elem + ' | '
-        else:
-          returnStr += elem
-    elif commandList[0] == 'cat':
-      returnList = cat(commandList[1])
-      if returnList[0] == True:
-        returnStr = returnList[1]
-      else:
-        returnStr = "There is no such file."
-    elif commandList[0] == 'echo':
-      returnStr = commandList[1]
-    elif commandList[0] == 'exit':
-      if isRemote == True:
-        remoteReset()
-      else:
-        exit()
-    elif commandList[0] == 'pwd':
-      pathList = []
-      dirName = cwd
-      success = 0
+      returnStr = "There is no such file."
+  elif commandList[0] == 'echo':
+    returnStr = commandList[1]
+  elif commandList[0] == 'exit':
+    if isRemote == True:
+      remoteReset()
+    else:
+      exit()
+  elif commandList[0] == 'pwd':
+    pathList = []
+    dirName = cwd
+    success = 0
+    for elem in dirs:
+      if elem[0] == dirName:
+        cwdIndex = dirs.index(elem)
+    isRootDir = 0
+    isRootDir2 = 0
+    while isRootDir == 0 and isRootDir2 == 0:
+      if cwd == '/':
+        isRootDir2 = 1
       for elem in dirs:
-        if elem[0] == dirName:
+        if elem[0] == dirName and isRootDir2 == 0:
           cwdIndex = dirs.index(elem)
-      isRootDir = 0
-      isRootDir2 = 0
-      while isRootDir == 0 and isRootDir2 == 0:
-        if cwd == '/':
-          isRootDir2 = 1
-        for elem in dirs:
-          if elem[0] == dirName and isRootDir2 == 0:
-            cwdIndex = dirs.index(elem)
-            pathList.insert(0, dirName)
-            dirName = dirs[cwdIndex][2]
-            if dirName == '/':
-              isRootDir = 1
-      pathStr = '/'
-      for elem in pathList:
-        pathStr += elem + '/'
-      returnStr = pathStr
- 
+          pathList.insert(0, dirName)
+          dirName = dirs[cwdIndex][2]
+          if dirName == '/':
+            isRootDir = 1
+    pathStr = '/'
+    for elem in pathList:
+      pathStr += elem + '/'
+    returnStr = pathStr
     # cd command
-    elif commandList[0] == 'cd':
-      cdReturn = cd(commandList[1])
-      if cdReturn == 1:
-        returnStr = "Already in root directory; operation not permitted."
-      elif cdReturn == 2:
-        returnStr = "Operation not permitted; no such directory."
-   
-    elif commandList[0] == 'touch':
-      files.append([commandList[1], cwd, ''])
-    elif commandList[0] == 'write':
-      for elem in files:
-        if elem[0] == commandList[1]:
-          writeStr = ''
-          for command in commandList[2:]:
-            if command == '\\n':
-              writeStr += '\n'
+  elif commandList[0] == 'cd':
+    cdReturn = cd(commandList[1])
+    if cdReturn == 1:
+      returnStr = "Already in root directory; operation not permitted."
+    elif cdReturn == 2:
+      returnStr = "Operation not permitted; no such directory."
+ 
+  elif commandList[0] == 'touch':
+    files.append([commandList[1], cwd, ''])
+  elif commandList[0] == 'write':
+    for elem in files:
+      if elem[0] == commandList[1]:
+        writeStr = ''
+        for command in commandList[2:]:
+          if command == '\\n':
+            writeStr += '\n'
+          else:
+            if writeStr == '':
+              writeStr += command
             else:
-              if writeStr == '':
-                writeStr += command
-              else:
-                writeStr = writeStr + ' ' + command
-          elem[2] = writeStr
-    elif commandList[0] == 'autosave':
-      if autoSave == 0:
-        autoSave = 1
-      elif autoSave == 1:
-        autoSave = 0
-    elif commandList[0] == 'autocheck':
-      returnStr = autoSave
-    elif commandList[0] == 'save':
-      write()
-    elif commandList[0] == 'mkdir':
-      dirs.append([commandList[1], 0, cwd, []])
-    elif commandList[0] == 'rm':
-      rm(commandList[1])
-    elif commandList[0] == 'ip':
-      returnStr = ip
-
+              writeStr = writeStr + ' ' + command
+        elem[2] = writeStr
+  elif commandList[0] == 'autosave':
+    if autoSave == 0:
+      autoSave = 1
+    elif autoSave == 1:
+      autoSave = 0
+  elif commandList[0] == 'autocheck':
+    returnStr = autoSave
+  elif commandList[0] == 'save':
+    write()
+  elif commandList[0] == 'mkdir':
+    dirs.append([commandList[1], 0, cwd, []])
+  elif commandList[0] == 'rm':
+    rm(commandList[1])
+  elif commandList[0] == 'ip':
+    returnStr = ip
   # Debug options here
-    elif commandList[0] == 'debug':
-      returnStr = crackSecure
-   
-    elif commandList[0] == 'connect':
-      if isRemote == False:
-        connect(commandList[1])
-      else:
-        returnStr = "Cannot connect to remote server from remote server."
-    elif commandList[0] == 'telnet':
-      if isRemote == False:
-        telnet(commandList[1])
-      else:
-        returnStr = "Cannot connect to remote server from remote server."
+  elif commandList[0] == 'debug':
+    returnStr = crackSecure
+ 
+  elif commandList[0] == 'connect':
+    if isRemote == False:
+      connect(commandList[1])
     else:
-      returnStr = "Input not understood. Type 'help' to see a list of commands."
-    if autoSave == 1:
-      write()
-
-    # Return returnStr, when not empty, properly.
-    if returnStr != '':
-      if mode == 0:
-        return returnStr
-      else:
-        print(returnStr)
-
+      returnStr = "Cannot connect to remote server from remote server."
+  elif commandList[0] == 'telnet':
+    if isRemote == False:
+      telnet(commandList[1])
+    else:
+      returnStr = "Cannot connect to remote server from remote server."
+  else:
+    returnStr = "Input not understood. Type 'help' to see a list of commands."
+  
+  # Autosave line.
+  if autoSave == 1 and mode == 1:
+    write()
+   # Return returnStr, when not empty, properly.
+  if returnStr != '':
+    return returnStr
 def main():
   global hostname
   global username
@@ -503,7 +494,11 @@ def main():
   notLoggedIn('std', 'nofile')
   print("Welcome back to %s, %s!" % (hostname, username))
   cwd = '/'
-  inputLoop()
+  while True:
+    inputStr = input("%s@%s> " % (username, hostname))
+    returnStr = inputLoop(1, inputStr)
+    if returnStr != None:
+      print(returnStr)
 
 main()
 
