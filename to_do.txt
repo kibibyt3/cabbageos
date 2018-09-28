@@ -1,5 +1,1 @@
-1: So, when I telnet in a given session and then actually use connect to that same server, it isn't able to load anything on that server. Further, it overwrites save such that all directories save for home don't exist. I wonder if it's using the default init script for non-default users.
-
-3: Make it so that cdreturns acutally returns through inputloop.
-
-4: Later, let's hash and salt passwords.
+1: Let's hash and salt passwords.
