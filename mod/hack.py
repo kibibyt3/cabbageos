@@ -91,6 +91,8 @@ def remoteLoad(openFile):
 
   global crackSecure
 
+  global cwd
+
   usernameContainer = username
   passwordContainer = password
   hostnameContainer = hostname
@@ -109,7 +111,9 @@ def remoteLoad(openFile):
   fileName = openFile
   crackSecure = int(file.load(openFile, 'crackSecure'))
 
-  isRemote = True  
+  isRemote = True
+
+  cwd = '/' # So as to prevent it from carrying across local and remote.
 
 def remoteReset():
   global username
@@ -131,6 +135,7 @@ def remoteReset():
   global crackSecureContainer
 
   global isRemote
+  global cwd
 
   username = usernameContainer
   password = passwordContainer
@@ -141,7 +146,9 @@ def remoteReset():
   fileName = fileNameContainer  
   crackSecure = crackSecureContainer
 
-  isRemote = False 
+  isRemote = False
+  
+  cwd = '/' # Since otherwise the directory carries across between remote and local.
 
 def notLoggedIn(mode, savFile):
   global username
@@ -292,6 +299,7 @@ def telnet(ipTry):
   global ip
   global globalUsername
   global isRemote
+  global username
   found = False
   isRemote = True
   for elem in file.parseLs('files/computers.txt'):
@@ -301,6 +309,7 @@ def telnet(ipTry):
       username = file.load(savFile, 'username')
       password = file.load(savFile, 'password')
       loginReturn = cracks.autoLogin('remote', savFile, username, password)
+      load()
       found = True
       cdReturns = []
       cdReturns.append(inputLoop(0, 'cd var'))
@@ -426,7 +435,7 @@ def inputLoop(mode, *arg):
     for elem in pathList:
       pathStr += elem + '/'
     returnStr = pathStr
-    # cd command
+  # cd command
   elif commandList[0] == 'cd':
     cdReturn = cd(commandList[1])
     if cdReturn == 1:
@@ -482,11 +491,13 @@ def inputLoop(mode, *arg):
     returnStr = "Input not understood. Type 'help' to see a list of commands."
   
   # Autosave line.
-  if autoSave == 1 and mode == 1:
+  if autoSave == 1 and mode == 1: # Mode is only here since telnet's the only thing that uses mode 0, and it doesn't need to write. If you need to remove it, it shouldn't break anything.
     write()
-   # Return returnStr, when not empty, properly.
+
+  # Return returnStr, when not empty, properly.
   if returnStr != '':
     return returnStr
+
 def main():
   global hostname
   global username
