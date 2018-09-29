@@ -1,1 +1,1 @@
-1: Let's hash and salt passwords.
+1: Make cat parse for \n and print a newline accordingly.

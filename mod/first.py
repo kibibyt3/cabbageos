@@ -59,6 +59,7 @@ def setup():
 
         # Whenever you add a default file, add a call here.
         addDefaultFile("admin", username)
+        addDefaultFile("info_server", username)
 
         loop = 0
         return(username)

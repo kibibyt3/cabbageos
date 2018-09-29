@@ -15,7 +15,7 @@ def init(username, dirs, files):
   dirs = [['/', '1', 'thereisnoparent', []], ['home', '0', '/', []]]
 
   # Syntax for files is: name, parent, contents
-  files = [['welcome.txt', '/', "Welcome to cabbageOS! Type 'help' for a list of commands."], ['luck.txt', 'home', "Good luck!"]]
+  files = [['welcome.txt', '/', "Welcome to cabbageOS! Type 'help' for a list of commands."], ['luck.txt', 'home', "Good luck!"], ['for_help.txt', 'home', "If you're looking for help, try inf_serv at 65.61.234.21. Username is info_server and password is tellmeyoursecrets!"]]
 
   strDirs = str(dirs)
   strFiles = str(files)

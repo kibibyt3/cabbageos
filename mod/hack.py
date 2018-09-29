@@ -285,17 +285,20 @@ def connect(ipTry):
   found = False
   for elem in file.parseLs('files/computers.txt'):
     remoteLoad('saves/%s/%s' % (globalUsername, elem))
+
     if ip == ipTry:
       found = True
       print("Successfully connected to %s." % ip)
-      notLoggedIn('remote', 'saves/%s/admin.sav' % globalUsername)
+      notLoggedIn('remote', 'saves/%s/%s' % (globalUsername, elem))
       return(True)
-    else:
-      remoteReset()
-      print("A connection error occurred.")
-      return(False)
+     
+  # If the IPs never match, then the IP doesn't exist, and
+  # the lack of a return call brings us here.
+  remoteReset()
+  print("A connection error occurred.")
+  return(False)
 
-def telnet(ipTry):
+def telnet(ipTry, tryFile="index.html"):
   global ip
   global globalUsername
   global isRemote
@@ -317,17 +320,17 @@ def telnet(ipTry):
       cdReturns.append(inputLoop(0, 'cd html'))
       for elem in cdReturns:
         if elem == "Operation not permitted; no such directory.":
-          print("An index.html file could not be found at this server.")
+          print("The specified file could not be found at this server.")
           remoteReset()
           return 3
-      catReturn = cat("index.html")
+      catReturn = cat(tryFile)
       if catReturn[0]:
         print(catReturn[1])
         remoteReset()
         return 0
       else:
         remoteReset()
-        print("An index.html file could not be found at this server.")
+        print("The specified file could not be found at this server.")
         return 1
   if found == False:
     print("Failed to connect to %s." % ipTry)
@@ -484,7 +487,12 @@ def inputLoop(mode, *arg):
       returnStr = "Cannot connect to remote server from remote server."
   elif commandList[0] == 'telnet':
     if isRemote == False:
-      telnet(commandList[1])
+      try:
+        x = commandList[2]
+      except IndexError:
+        telnet(commandList[1])
+      else:
+        telnet(commandList[1], tryFile = commandList[2])
     else:
       returnStr = "Cannot connect to remote server from remote server."
   else:
