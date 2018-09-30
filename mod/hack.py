@@ -405,7 +405,18 @@ def inputLoop(mode, *arg):
   elif commandList[0] == 'cat':
     returnList = cat(commandList[1])
     if returnList[0] == True:
-      returnStr = returnList[1]
+      rawReturn = returnList[1]
+      slashFlag = False
+      returnStr = ''
+      for elem in rawReturn:
+        if elem == '\\':
+          slashFlag = True
+        elif elem == 'n' and slashFlag == True:
+          slashFlag = False
+          returnStr += '\n'
+        else:
+          slashFlag = False
+          returnStr += elem
     else:
       returnStr = "There is no such file."
   elif commandList[0] == 'echo':

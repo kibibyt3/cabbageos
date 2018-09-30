@@ -1,1 +1,0 @@
-1: Make cat parse for \n and print a newline accordingly.
