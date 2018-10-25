@@ -505,24 +505,28 @@ def inputLoop(mode, *arg):
         telnet(commandList[1], tryFile = commandList[2])
     else:
       returnStr = "Cannot connect to remote server from remote server."
-  else:
-    returnStr = "Input not understood. Type 'help' to see a list of commands."
+  
   elif commandList[0] == 'help':     # Command help: leave this at the bottom
     returnStr = "ls: Lists all files and directories in the working directory.\n\
-    cat: Reads a given file.\n\
-    echo: Returns the argument.\n\
-    exit: Exits the VM.\n\
-    pwd: Prints the working directory.\n\
-    cd: Changes the working directory.\n\
-    touch: Creates a new file in the working directory.\n\
-    write: Writes a given string to a file.\n\
-    autosave: Either enables or disables autosave.\n\
-    autocheck: Determines whether autosave is enabled.\n\
-    save: Saves the current state.\n\
-    mkdir: Creates a new directory.\n\
-    rm: Deletes a given file or directory.\n\
-    ip: Returns the current IP address.\n\
-    connect: Connects to a remote server.\n\
+cat: Reads a given file.\n\
+echo: Returns the argument.\n\
+exit: Exits the VM.\n\
+pwd: Prints the working directory.\n\
+cd: Changes the working directory.\n\
+touch: Creates a new file in the working directory.\n\
+write: Writes a given string to a file.\n\
+autosave: Either enables or disables autosave.\n\
+autocheck: Determines whether autosave is enabled.\n\
+save: Saves the current state.\n\
+mkdir: Creates a new directory.\n\
+rm: Deletes a given file or directory.\n\
+ip: Returns the current IP address.\n\
+connect: Connects to a remote server.\n\
+telnet: Grabs index.html from the /var/www/html directory of a remote server.\n"
+
+  else:
+    returnStr = "Input not understood. Type 'help' to see a list of commands."
+
 
   # Autosave line.
   if autoSave == 1 and mode == 1: # Mode is only here since telnet's the only thing that uses mode 0, and it doesn't need to write. If you need to remove it, it shouldn't break anything.
