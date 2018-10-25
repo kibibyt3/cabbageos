@@ -10,7 +10,6 @@ CYAN="\\e[36m"
 # Because spelling is weird.
 LIGHT_GRAY="\\e[37m"
 LIGHT_GREY="\\e[37m"
-
 DARK_GRAY="\\e[90m"
 DARK_GREY="\\e[90m"
 
