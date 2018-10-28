@@ -5,9 +5,10 @@ from ast import literal_eval
 # First, add a var to parse;
 # Then, add a var to save;
 # Last, add a var to load.
-# After that, do the same for
-# the write, save, and load
-# functions in hack.py.
+# Next add the var and a var container to hack.py.
+# After that, do the same for the write, save, and load functions in hack.py.
+# Then for the remoteLoad function.
+# Then remoteReset.
 
 def init(username, dirs, files):
   
@@ -65,6 +66,8 @@ def parse(file, mode):
   strFiles = ''
   ip = ''
   crackSecure = ''
+  sysColor0 = ''
+  sysColor1 = ''
   for elem in savStr:
     if read == 0:
       if elem == '<':
@@ -87,6 +90,10 @@ def parse(file, mode):
         strFiles += elem
       elif tries == 6:
         crackSecure += elem
+      elif tries == 7:
+        sysColor0 += elem
+      elif tries == 8:
+        sysColor1 += elem
     if updateRead == 1:
       read = 1
       updateRead = 0
@@ -105,6 +112,10 @@ def parse(file, mode):
     return(ip)
   elif mode == 'crackSecure':
     return(crackSecure)
+  elif mode == 'sysColor0':
+    return(sysColor0)
+  elif mode == 'sysColor1':
+    return(sysColor1)
   elif mode == 'all':
     return([trueUsername, truePassword, hostname, ip, strFiles, strDirs, crackSecure])
 
@@ -142,6 +153,10 @@ def load(toSavFile, mode):
     return(parse(toSavFile, 'ip'))
   elif mode == 'crackSecure':
     return(parse(toSavFile, 'crackSecure'))
+  elif mode == 'sysColor0':
+    return(parse(toSavFile, 'sysColor0'))
+  elif mode == 'sysColor1':
+    return(parse(toSavFile, 'sysColor1'))
   else:
     print("ERROR: Consult file.py. Code 0.") # Error code 0 here
     exit()

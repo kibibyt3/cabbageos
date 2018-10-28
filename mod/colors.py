@@ -1,4 +1,4 @@
-DEFAULT="\033[97m"
+DEFAULT="\033[97m\033[0m" # Has components to turn output to white and no attributes, e.g. no bold.
 BLACK="\033[30m"
 RED="\033[31m"
 GREEN="\033[32m"
@@ -20,3 +20,5 @@ LIGHT_BLUE="\033[94m"
 LIGHT_MAGENTA="\033[95m"
 LIGHT_CYAN="\033[96m"
 WHITE="\033[97m"
+
+BOLD="\033[1m"

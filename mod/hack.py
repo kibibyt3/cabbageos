@@ -1,11 +1,12 @@
 #!/usr/bin/python3.7
-import colors
+from colors import *
 import sys
 import time
 import os
 import file
 import first
 import cracks
+import commands
 from random import choice
 
 globalUsername = ''
@@ -15,6 +16,8 @@ hostname = ''
 ip = ''
 files = []
 dirs = []
+sysColor0 = ''
+sysColor1 = ''
 
 isRemote = False
 usernameContainer = ''
@@ -24,6 +27,8 @@ ipContainer = ''
 filesContainer = []
 dirsContainer = []
 crackSecureContainer = 0
+sysColor0Container = ''
+sysColor1Container = ''
 
 fileName = ''
 fileNameContainer = ''
@@ -45,13 +50,17 @@ def write():
   global files
   global dirs
   global crackSecure
-  file.write(fileName, username, password, hostname, ip, dirs, files, crackSecure)
+  global sysColor0
+  global sysColor1
+  file.write(fileName, username, password, hostname, ip, dirs, files, crackSecure, sysColor0, sysColor1)
 
 def save():
   global dirs
   global files
   global fileName
-  file.save(dirs, files, fileName)
+  global sysColor0
+  global sysColor1
+  file.save(dirs, files, fileName, sysColor0, sysColor1)
 
 def load():
   global username
@@ -62,6 +71,8 @@ def load():
   global dirs
   global fileName
   global crackSecure
+  global sysColor0
+  global sysColor1
   username = file.load(fileName, 'username')
   password = file.load(fileName, 'password')
   hostname = file.load(fileName, 'hostname')
@@ -69,6 +80,8 @@ def load():
   files = file.load(fileName, 'files')
   dirs = file.load(fileName, 'dirs')
   crackSecure = int(file.load(fileName, 'crackSecure'))
+  sysColor0 = file.load(fileName, 'sysColor0')
+  sysColor1 = file.load(fileName, 'sysColor1')
 
 def remoteLoad(openFile):
   global username
@@ -86,11 +99,15 @@ def remoteLoad(openFile):
   global dirsContainer
   global fileNameContainer
   global crackSecureContainer
+  global sysColor0Container
+  global sysColor1Container
 
   global isRemote
   global globalUsername
 
   global crackSecure
+  global sysColor0
+  global sysColor1
 
   global cwd
 
@@ -102,6 +119,8 @@ def remoteLoad(openFile):
   dirsContainer = dirs
   fileNameContainer = fileName
   crackSecureContainer = crackSecure
+  sysColor0Container = sysColor0
+  sysColor1Container = sysColor1
 
   username = file.load(openFile, 'username')
   password = file.load(openFile, 'password')
@@ -111,6 +130,8 @@ def remoteLoad(openFile):
   remoteDirs = file.load(openFile, 'dirs')
   fileName = openFile
   crackSecure = int(file.load(openFile, 'crackSecure'))
+  sysColor0 = file.load(openFile, 'sysColor0')
+  sysColor1 = file.load(openFile, 'sysColor1')
 
   isRemote = True
 
@@ -125,6 +146,8 @@ def remoteReset():
   global dirs
   global fileName
   global crackSecure
+  global sysColor0
+  global sysColor1
 
   global usernameContainer
   global passwordContainer
@@ -134,6 +157,8 @@ def remoteReset():
   global dirsContainer
   global fileNameContainer
   global crackSecureContainer
+  global sysColor0Container
+  global sysColor1Container
 
   global isRemote
   global cwd
@@ -146,6 +171,8 @@ def remoteReset():
   dirs = dirsContainer
   fileName = fileNameContainer  
   crackSecure = crackSecureContainer
+  sysColor0 = sysColor0Container
+  sysColor1 = sysColor1Container
 
   isRemote = False
   
@@ -162,7 +189,7 @@ def notLoggedIn(mode, savFile):
   from random import shuffle
   loopLogin = 1
   while loopLogin == 1:
-    command = input(colors.LIGHT_BLUE + '> ' + colors.DEFAULT)
+    command = input(CYAN + BOLD + '> ' + DEFAULT)
     if command == 'register' and mode == 'std':  # Command register
       username = first.setup()
       file.init(username, files, dirs)
@@ -389,6 +416,8 @@ def inputLoop(mode, *arg):
   global fileNameContainer
 
   global crackSecure
+  global sysColor0
+  global sysColor1
 
   returnStr = ''
   autoSave = 1
@@ -507,6 +536,20 @@ def inputLoop(mode, *arg):
     else:
       returnStr = "Cannot connect to remote server from remote server."
   
+  elif commandList[0] == 'changecolor0':
+    rawReturn = commands.returnColor(commandList[1])
+    if rawReturn == 1:
+      returnStr = "Color not recognized."
+    else:
+      sysColor0 = rawReturn
+
+  elif commandList[0] == 'changecolor1':
+    rawReturn = commands.returnColor(commandList[1])
+    if rawReturn == 1:
+      returnStr = "Color not recognized."
+    else:
+      sysColor1 = rawReturn
+
   elif commandList[0] == 'help':     # Command help: leave this at the bottom
     returnStr = "ls: Lists all files and directories in the working directory.\n\
 cat: Reads a given file.\n\
@@ -523,7 +566,9 @@ mkdir: Creates a new directory.\n\
 rm: Deletes a given file or directory.\n\
 ip: Returns the current IP address.\n\
 connect: Connects to a remote server.\n\
-telnet: Grabs index.html from the /var/www/html directory of a remote server.\n"
+telnet: Grabs index.html from the /var/www/html directory of a remote server.\n\
+changecolor0: Changes primary system color.\n\
+changecolor1: Changes secondary system color.\n"
 
   else:
     returnStr = "Input not understood. Type 'help' to see a list of commands."
@@ -545,7 +590,7 @@ def main():
   print("Welcome back to %s, %s!" % (hostname, username))
   cwd = '/'
   while True:
-    inputStr = input("%s@%s> " % (username, hostname))
+    inputStr = input("%s%s%s@%s%s%s> " % (sysColor1 + BOLD, username, DEFAULT, sysColor0 + BOLD, hostname, DEFAULT))
     returnStr = inputLoop(1, inputStr)
     if returnStr != None:
       print(returnStr)

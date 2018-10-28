@@ -1,7 +1,9 @@
+from colors import *
+
 def login(mode, savFile):
   import file
-  usernameTry = input('Username: ')
-  passwordTry = input('Password: ')
+  usernameTry = input(CYAN + BOLD + 'Username: ' + DEFAULT)
+  passwordTry = input(CYAN + BOLD + 'Password: ' + DEFAULT)
   try:
     if mode == 'std':
       tryFile = open('saves/%s/%s.sav' % (usernameTry, usernameTry), 'r+')
