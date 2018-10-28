@@ -1,4 +1,5 @@
 #!/usr/bin/python3.7
+import colors
 import sys
 import time
 import os
@@ -161,7 +162,7 @@ def notLoggedIn(mode, savFile):
   from random import shuffle
   loopLogin = 1
   while loopLogin == 1:
-    command = input('> ')
+    command = input(colors.LIGHT_BLUE + '> ' + colors.DEFAULT)
     if command == 'register' and mode == 'std':  # Command register
       username = first.setup()
       file.init(username, files, dirs)
