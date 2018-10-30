@@ -1,4 +1,5 @@
 from colors import *
+import file
 
 def returnColor(arg):
   color = arg.lower()
@@ -40,3 +41,19 @@ def returnColor(arg):
     return WHITE
   else:
     return 1
+
+def returnProbe():
+  files = file.parseLs("files/computers.txt")
+  returnList = []
+  for elem in files:
+    returnList.append(file.load("defaults/" + elem, 'ip'))
+  returnStr = ""
+  elems = len(returnList)
+  iterations = 0
+  for elem in returnList:
+    iterations += 1
+    if iterations != elems:
+      returnStr += elem + '\n'
+    else:
+      returnStr += elem
+  return returnStr

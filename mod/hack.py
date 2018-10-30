@@ -550,6 +550,9 @@ def inputLoop(mode, *arg):
     else:
       sysColor1 = rawReturn
 
+  elif commandList[0] == 'probe':
+    returnStr = commands.returnProbe()
+
   elif commandList[0] == 'help':     # Command help: leave this at the bottom
     returnStr = "ls: Lists all files and directories in the working directory.\n\
 cat: Reads a given file.\n\
