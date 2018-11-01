@@ -1,3 +1,4 @@
 1. More colors
 2. Yeah should probably also implement a   t e x t   e d i t o r
 3. Try telnet 65.whateveripis. If you try it, you're logged into test_server for some reason.
+4. Make gitignore work.
