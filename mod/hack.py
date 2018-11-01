@@ -553,6 +553,12 @@ def inputLoop(mode, *arg):
   elif commandList[0] == 'probe':
     returnStr = commands.returnProbe()
 
+  elif commandList[0] == 'clear':
+    os.system("clear")
+
+  elif commandList[0] == '': # Just in case the user inputs nothing, doesn't return an error. I like repeatedly tapping enter sometimes.
+    thisBoolMeansNothing = False # So that the method has something to do so it doesn't feel bad.
+
   elif commandList[0] == 'help':     # Command help: leave this at the bottom
     returnStr = "ls: Lists all files and directories in the working directory.\n\
 cat: Reads a given file.\n\
@@ -571,7 +577,9 @@ ip: Returns the current IP address.\n\
 connect: Connects to a remote server.\n\
 telnet: Grabs index.html from the /var/www/html directory of a remote server.\n\
 changecolor0: Changes primary system color.\n\
-changecolor1: Changes secondary system color.\n"
+changecolor1: Changes secondary system color.\n\
+probe: Finds addresses accessible to localhost.\n\
+clear: Clears the screen.\n"
 
   else:
     returnStr = "Input not understood. Type 'help' to see a list of commands."
