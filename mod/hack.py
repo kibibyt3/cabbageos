@@ -163,20 +163,21 @@ def remoteReset():
   global isRemote
   global cwd
 
-  username = usernameContainer
-  password = passwordContainer
-  hostname = hostnameContainer
-  ip = ipContainer
-  files = filesContainer
-  dirs = dirsContainer
-  fileName = fileNameContainer  
-  crackSecure = crackSecureContainer
-  sysColor0 = sysColor0Container
-  sysColor1 = sysColor1Container
+  if isRemote == True:
+    username = usernameContainer
+    password = passwordContainer
+    hostname = hostnameContainer
+    ip = ipContainer
+    files = filesContainer
+    dirs = dirsContainer
+    fileName = fileNameContainer  
+    crackSecure = crackSecureContainer
+    sysColor0 = sysColor0Container
+    sysColor1 = sysColor1Container
 
-  isRemote = False
+    isRemote = False
   
-  cwd = '/' # Since otherwise the directory carries across between remote and local.
+    cwd = '/' # Since otherwise the directory carries across between remote and local.
 
 def notLoggedIn(mode, savFile):
   global username
@@ -326,6 +327,10 @@ def connect(ipTry):
   print("A connection error occurred.")
   return(False)
 
+def errorLog(message):
+  errorFile = open('error_log.txt', 'a')
+  errorFile.write(message)
+
 def telnet(ipTry, tryFile="index.html"):
   global ip
   global globalUsername
@@ -334,6 +339,8 @@ def telnet(ipTry, tryFile="index.html"):
   found = False
   isRemote = True
   for elem in file.parseLs('files/computers.txt'):
+    remoteReset()
+    errorLog('iter')
     remoteLoad('saves/%s/%s' % (globalUsername, elem))
     if ip == ipTry:
       savFile = 'saves/%s/%s' % (globalUsername, elem)
