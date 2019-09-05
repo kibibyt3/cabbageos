@@ -8,15 +8,12 @@ from random import choice
 
 class Computer:
 	root = False
-	username = ""
-	password = ""
 	hostname = ""
 	ip = ""
 	files = []
 	dirs = []
 	crackSecure = False
 	regSecure = False
-	fileName = ""
 	cwd = ""
 
 	def loginScreen(self):
@@ -34,5 +31,6 @@ class Computer:
 			else:
 				print("Input misunderstood. Type 'help' to see possible commands.")
 
-	def addUser(un, pw):
-		
+	def register(self):
+		if !regSecure:
+			newUser = User(sequence.register())
