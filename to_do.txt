@@ -1,0 +1,2 @@
+1. Make colorized output! What fun!
+2. Yeah should probably also implement a   t e x t   e d i t o r

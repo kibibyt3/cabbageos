@@ -1,4 +1,5 @@
-#!/usr/bin/python3.7
+#!/usr/bin/python
+import colors
 import sys
 import time
 import os
@@ -161,11 +162,11 @@ def notLoggedIn(mode, savFile):
   from random import shuffle
   loopLogin = 1
   while loopLogin == 1:
-    command = input('>')
-    if command == 'register' and mode == 'std':
+    command = input(colors.LIGHT_BLUE + '> ' + colors.DEFAULT)
+    if command == 'register' and mode == 'std':  # Command register
       username = first.setup()
       file.init(username, files, dirs)
-    elif command == 'login':
+    elif command == 'login':   # Command login
       loginReturn = cracks.login(mode, savFile)
       if loginReturn != False:
         usernameTry = loginReturn[0]
@@ -177,7 +178,7 @@ def notLoggedIn(mode, savFile):
         elif mode == 'remote':
           fileName = savFile
         load()
-    elif command == 'help':
+    elif command == 'help':      # Command help
       print("login: Allows the user to log in\n\
 help: Prints this help dialogue\n\
 exit: exits the VM")
@@ -186,7 +187,7 @@ exit: exits the VM")
       if mode == 'std':
         print("register: Allows creation of a new user")
 
-    elif command == 'crackpass':
+    elif command == 'crackpass':   # Command crackpass: leave out of help
       usernameTry = input('Username: ')
       chars = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',1,1,1,1,1,1,1,0,0,0,0,0,0,0]
       shuffle(chars)
@@ -395,14 +396,14 @@ def inputLoop(mode, *arg):
   commandRaw = arg[0]
   commandList = parseCommand(commandRaw)
   returnSuccess = 0
-  if commandList[0] == 'ls':
+  if commandList[0] == 'ls':   # Command ls
     lsReturn = ls()
     for elem in lsReturn:
       if lsReturn.index(elem) != (len(lsReturn) - 1):
         returnStr += elem + ' | '
       else:
         returnStr += elem
-  elif commandList[0] == 'cat':
+  elif commandList[0] == 'cat':   # Command cat
     returnList = cat(commandList[1])
     if returnList[0] == True:
       rawReturn = returnList[1]
@@ -419,14 +420,14 @@ def inputLoop(mode, *arg):
           returnStr += elem
     else:
       returnStr = "There is no such file."
-  elif commandList[0] == 'echo':
+  elif commandList[0] == 'echo':   # Command echo
     returnStr = commandList[1]
-  elif commandList[0] == 'exit':
+  elif commandList[0] == 'exit':   # Command exit
     if isRemote == True:
       remoteReset()
     else:
       exit()
-  elif commandList[0] == 'pwd':
+  elif commandList[0] == 'pwd':   # Command pwd
     pathList = []
     dirName = cwd
     success = 0
@@ -449,17 +450,16 @@ def inputLoop(mode, *arg):
     for elem in pathList:
       pathStr += elem + '/'
     returnStr = pathStr
-  # cd command
-  elif commandList[0] == 'cd':
+  elif commandList[0] == 'cd':     # Command cd
     cdReturn = cd(commandList[1])
     if cdReturn == 1:
       returnStr = "Already in root directory; operation not permitted."
     elif cdReturn == 2:
       returnStr = "Operation not permitted; no such directory."
  
-  elif commandList[0] == 'touch':
+  elif commandList[0] == 'touch':   # Command touch
     files.append([commandList[1], cwd, ''])
-  elif commandList[0] == 'write':
+  elif commandList[0] == 'write':   # Command write
     for elem in files:
       if elem[0] == commandList[1]:
         writeStr = ''
@@ -472,31 +472,31 @@ def inputLoop(mode, *arg):
             else:
               writeStr = writeStr + ' ' + command
         elem[2] = writeStr
-  elif commandList[0] == 'autosave':
+  elif commandList[0] == 'autosave':   # Command autosave
     if autoSave == 0:
       autoSave = 1
     elif autoSave == 1:
       autoSave = 0
-  elif commandList[0] == 'autocheck':
+  elif commandList[0] == 'autocheck':   # Command autocheck
     returnStr = autoSave
-  elif commandList[0] == 'save':
+  elif commandList[0] == 'save':   # Command save
     write()
-  elif commandList[0] == 'mkdir':
+  elif commandList[0] == 'mkdir':    # Command mkdir
     dirs.append([commandList[1], 0, cwd, []])
-  elif commandList[0] == 'rm':
+  elif commandList[0] == 'rm':    # Command rm
     rm(commandList[1])
-  elif commandList[0] == 'ip':
+  elif commandList[0] == 'ip':   # Command ip
     returnStr = ip
   # Debug options here
-  elif commandList[0] == 'debug':
+  elif commandList[0] == 'debug':  # Command debug: leave out of help
     returnStr = crackSecure
  
-  elif commandList[0] == 'connect':
+  elif commandList[0] == 'connect':  # Command connect
     if isRemote == False:
       connect(commandList[1])
     else:
       returnStr = "Cannot connect to remote server from remote server."
-  elif commandList[0] == 'telnet':
+  elif commandList[0] == 'telnet':   # Command telnet
     if isRemote == False:
       try:
         x = commandList[2]
@@ -506,9 +506,29 @@ def inputLoop(mode, *arg):
         telnet(commandList[1], tryFile = commandList[2])
     else:
       returnStr = "Cannot connect to remote server from remote server."
+  
+  elif commandList[0] == 'help':     # Command help: leave this at the bottom
+    returnStr = "ls: Lists all files and directories in the working directory.\n\
+cat: Reads a given file.\n\
+echo: Returns the argument.\n\
+exit: Exits the VM.\n\
+pwd: Prints the working directory.\n\
+cd: Changes the working directory.\n\
+touch: Creates a new file in the working directory.\n\
+write: Writes a given string to a file.\n\
+autosave: Either enables or disables autosave.\n\
+autocheck: Determines whether autosave is enabled.\n\
+save: Saves the current state.\n\
+mkdir: Creates a new directory.\n\
+rm: Deletes a given file or directory.\n\
+ip: Returns the current IP address.\n\
+connect: Connects to a remote server.\n\
+telnet: Grabs index.html from the /var/www/html directory of a remote server.\n"
+
   else:
     returnStr = "Input not understood. Type 'help' to see a list of commands."
-  
+
+
   # Autosave line.
   if autoSave == 1 and mode == 1: # Mode is only here since telnet's the only thing that uses mode 0, and it doesn't need to write. If you need to remove it, it shouldn't break anything.
     write()
