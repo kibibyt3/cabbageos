@@ -5,15 +5,15 @@ class User:
 	password = ""
 	hostname = ""
 	
-	def __init__(self, username, password, hostname):
+	def __init__(self, username=None, password=None, hostname=None):
 		self.username = username
 		self.password = password
 		self.hostname = hostname
+	
+	def save(self):
+		with open("saves/users/" + self.username + ".user", 'wb') as saveFile:
+			pickle.dump(self, saveFile)
 
-	def saveUser(self):
-		with open("saves/users/" + username + ".user", 'w') as saveFile:
-			pickle.dump((username, password, hostname), saveFile)
-
-	def loadUser(self, tryUsername):
-		with open("saves/users/" + tryUsername + ".user", 'r') as saveFile:
-			username, password, hostname = pickle.load(saveFile)
+	def load(tryUsername):
+		with open("saves/users/" + tryUsername + ".user", 'rb') as saveFile:
+			return pickle.load(saveFile)

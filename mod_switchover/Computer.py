@@ -4,7 +4,7 @@ import os
 from time import sleep
 from random import shuffle
 from random import choice
-import Sequence
+import Tools
 import User
 import Colors
 
@@ -17,6 +17,7 @@ class Computer:
 	crackSecure = False
 	regSecure = False
 	cwd = ""
+	activeUser = None	
 
 	def __init__(self, root, hostname, ip, files, dirs, crackSecure, regSecure):
 		self.root = root
@@ -30,41 +31,53 @@ class Computer:
 	def loginScreen(self):
 		loop = True
 		while loop:
-			command = str(input(Colors.LIGHT_BLUE + '> ' + Colors.DEFAULT))
+			command = input(Colors.LIGHT_BLUE + '> ' + Colors.DEFAULT)
 			if command == 'register':
-				register()
+				self.register()
 			elif command == 'login':
-				login(False)
+				self.login(False)
 			elif command == 'help':
-				help()
+				self.help()
 			elif command == 'exit':
-				exit()
+				self.exit()
 			else:
 				print("Input misunderstood. Type 'help' to see possible commands.")
 
 	def register(self):
-		if not regSecure:
-			regSequence = Sequence(['Username: ', 'Password: ', 'Confirm Password: '])
-			username, password, confPassowrd = regSequence.execute()
+		if not self.regSecure:
+			regSequence = Tools.Sequence(['Username: ', 'Password: ', 'Confirm Password: '])
+			username, password, confPassword = regSequence.execute()
 			if password != confPassword:
 				print("Password not the same. Try again.")
 			else:
-				newUser = User(username, password, hostname)
+				newUser = User.User(username, password, self.hostname)
+				newUser.save()
 		else:
 			print("Cannot register a new user on this machine.")
 
 	def login(self, crack):
 		if not crack:
-			loginSequence = Sequence(["Username: ", "Password: "])
+			loginSequence = Tools.Sequence(["Username: ", "Password: "])
 			usernameTry, passwordTry = loginSequence.execute()
-			userTry = User()
-			userTry.loadUser(usernameTry)
+			userTry = User.User.load(usernameTry)
 			if passwordTry != userTry.password:
 				print("Login attempt failed.")
 			else:
-				cliScreen()
+				self.activeUser = userTry
+				self.cliScreen()
+	
+	def help(self):
+		print("login: Allows the user to log in\n\
+register: Registers a new user\n\
+help: Prints the help dialogue\n\
+exit: Exits the VM")	
 
-	def cliScreen():
+	def exit(self):
+		exit()
+
+	def cliScreen(self):
 		loop = True
+		print(self.activeUser.username)
+		print(self.hostname)
 		while loop:
-			command = input(Colors.LIGHT_BLUE + '> ' + Colors.DEFAULT)
+			command = input(Colors.LIGHT_BLUE + "%s@%s" % (self.activeUser.username, self.hostname) + Colors.DEFAULT + "> ")
