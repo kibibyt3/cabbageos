@@ -32,16 +32,18 @@ class Computer:
 		loop = True
 		while loop:
 			command = input(Colors.LIGHT_BLUE + '> ' + Colors.DEFAULT)
-			if command == 'register':
+			case (command){
+			case 'register':
 				self.register()
-			elif command == 'login':
+			case 'login':
 				self.login(False)
-			elif command == 'help':
+			case 'help':
 				self.help()
-			elif command == 'exit':
+			case 'exit':
 				self.exit()
-			else:
+			default:
 				print("Input misunderstood. Type 'help' to see possible commands.")
+			}
 
 	def register(self):
 		if not self.regSecure:
@@ -77,7 +79,39 @@ exit: Exits the VM")
 
 	def cliScreen(self):
 		loop = True
-		print(self.activeUser.username)
-		print(self.hostname)
 		while loop:
 			command = input(Colors.LIGHT_BLUE + "%s@%s" % (self.activeUser.username, self.hostname) + Colors.DEFAULT + "> ")
+			cleanCommand = Tools.Tools.parseCommand(command)
+			switch (cleanCommand[0]){
+				case 'ls':
+					self.ls(cleanCommand[1:])
+				case 'cat':
+					self.cat(cleanCommand[1:])
+				case 'echo':
+					self.echo(cleanCommand[1:])
+				case 'exit':
+					self.exit(cleanCommand[1:])
+				case 'pwd':
+					self.pwd(cleanCommand[1:])
+				case 'cd':
+					self.cd(cleanCommand[1:])
+				case 'touch':
+					self.touch(cleanCommand[1:])
+				case 'write':
+					self.write(cleanCommand[1:])
+				case 'mkdir':
+					self.mkdir(cleanCommand[1:])
+				case 'rm':
+					self.rm(cleanCommand[1:])
+				case 'ip':
+					self.ip(cleanCommand[1:])
+				case 'connect':
+					self.connect(cleanCommand[1:])
+				case 'telnet':
+					self.telnet(cleanCommand[1:])
+				case 'help':
+					self.help(cleanCommand[1:])
+			}
+
+	def ls(arg*):
+		

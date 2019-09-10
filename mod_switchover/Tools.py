@@ -15,3 +15,19 @@ class Sequence:
 class Tools:
 	def ipGen():
 		return "%i.%i.%i.%i" % (randint(0, 256), randint(0, 256), randint(0, 256), randint(0, 256))
+	
+	def parseCommand(string):
+		returnList = []
+		write = False
+		container = ''
+		for elem in string:
+			if elem == ' ':
+				write = True
+			elif write:
+				returnList.append(container)
+				container = ''
+				write = False
+			if elem != ' ':
+				container += elem
+			returnList.append(container)
+			return returnList
